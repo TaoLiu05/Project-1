@@ -7,14 +7,19 @@
 class Snake {
     private:
     std::vector<Position> body;
-    enum Direction{
-        up,
-        down,
-        right,
-        left
-    };
+
+    bool pending_growth = false;
 
     public:
+
+    enum Direction{
+        Up,
+        Down,
+        Right,
+        Left
+    };
+
+    Direction current_direction;
 
     Snake();
 
@@ -22,7 +27,7 @@ class Snake {
 
     void grow();
 
-    void change_direction();
+    void change_direction(Direction new_direction);
 
 };
 
