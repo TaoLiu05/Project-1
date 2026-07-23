@@ -29,6 +29,10 @@ class Snake {
 
     void change_direction(Direction new_direction);
 
+    Position getHead() const;
+    
+    const std::vector<Position>& getBody() const;
+
 };
 
 #endif

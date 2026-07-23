@@ -4,18 +4,18 @@ Snake::Snake(){
     current_direction = Right;
 
     Position head;
-    head.x = 25;
-    head.y = 25;
+    head.x = 10;
+    head.y = 4;
     body.push_back(head);
 
     Position body1;
-    body1.x = 24;
-    body1.y = 25;
+    body1.x = 9;
+    body1.y = 4;
     body.push_back(body1);
 
     Position body2;
-    body2.x = 23;
-    body2.y = 25;
+    body2.x = 8;
+    body2.y = 4;
     body.push_back(body2);
 }
 
@@ -88,6 +88,20 @@ void Snake::change_direction(Direction new_direction ){
         }
     }
 }
+
+Position Snake:: getHead() const{
+    return body.at(0);
+}
+
+const std::vector<Position>& Snake::getBody() const{
+    return body;
+}
+
+
+
+
+
+
 
 
 
