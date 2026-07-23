@@ -25,6 +25,8 @@ class Game {
     bool is_gameover();
     int getScore();
     void spawnFood();
+    void checkCollision();
+    void checkFoodCollision();
 
 };
 
