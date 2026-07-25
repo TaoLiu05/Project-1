@@ -2,6 +2,7 @@
 #define SNAKE_HPP
 
 #include "position.hpp"
+#include "direction.hpp"
 #include<vector>
 
 class Snake {
@@ -11,13 +12,6 @@ class Snake {
     bool pending_growth = false;
 
     public:
-
-    enum Direction{
-        Up,
-        Down,
-        Right,
-        Left
-    };
 
     Direction current_direction;
 

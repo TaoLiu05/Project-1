@@ -1,4 +1,7 @@
 #include "Game.hpp"
+#include "Input.hpp"
+#include "color.hpp"
+
 #include <iostream>
 #include <random>
 #include <chrono>
@@ -6,29 +9,76 @@
 #include <cstdlib>
 
 Game::Game() {
-    spawnFood();
+    resetGame();
 };
 
 void Game::run(){
 
     using namespace std::chrono_literals;
 
-    while(!game_over){
+    while(running){
 
-        snake.move();
+        resetGame();
 
-        checkCollision();
-
-        checkFoodCollision();
-
+        std::chrono::steady_clock::time_point last_move_time = 
+        std::chrono::steady_clock::now();
+    
         system("clear");
 
         drawBoard();
 
-        std::this_thread::sleep_for(1s);
-    }
+        printControls();
 
-    std::cout <<"Game Over!" <<std::endl;
+        while(!game_over){
+
+            handleInputs();
+
+            auto current_time = std::chrono::steady_clock:: now();
+
+            auto elapsed_time = current_time - last_move_time;
+
+            if(elapsed_time >= move_delay){
+
+                snake.move();
+
+                checkCollision();
+
+                checkFoodCollision();
+
+                system("clear");
+
+                drawBoard();
+
+                if(!game_over){
+                    printControls();
+                }
+            
+                last_move_time = current_time;
+            }
+        }
+        printGameOver();
+
+        bool waiting = true;
+
+        while(waiting){
+            char key = input.getInput();
+
+            switch(key){
+                case 'r':
+                case 'R': {
+                    waiting = false;
+                    break;
+                }
+                case 'q':
+                case 'Q': {
+                    waiting = false;
+                    running = false;
+                    break;
+                }
+            }
+            std::this_thread::sleep_for(10ms);
+        }
+    }
 }
 
 void Game::drawBoard(){
@@ -36,22 +86,22 @@ void Game::drawBoard(){
     Position head = snake.getHead();
 
     for(int i = 0; i < width+2; i++){
-        std::cout << '#'; 
+        std::cout << Colors::CYAN << '#' << Colors::RESET; 
     }
     std::cout << std::endl;
 
     for(int row = 0; row < height; row++){
-        std::cout << '#';
+        std::cout << Colors::CYAN << '#' << Colors::RESET;
         for(int column = 0; column < width; column++){
             Position current;
             current.x = column;
             current.y = row;
 
             if (current == head){
-                std::cout <<'@';
+                std::cout << Colors::BRIGHT_GREEN <<'@'<< Colors::RESET;
             }
             else if(current == food){
-                std::cout <<'F';
+                std::cout << Colors::RED <<'F' << Colors::RESET;
             }
             else{
                 bool isBody = false;
@@ -62,7 +112,7 @@ void Game::drawBoard(){
                     }
                 }
                 if(isBody){
-                    std::cout << 'o';
+                    std::cout << Colors::GREEN << 'o' << Colors::RESET;
                 }
                 else{
                     std::cout << '.';
@@ -70,14 +120,14 @@ void Game::drawBoard(){
 
             }
         } 
-        std::cout <<'#';
+        std::cout << Colors::CYAN << '#' << Colors::RESET;
         std::cout << '\n';
     }
     for(int i = 0; i < width+2; i++){
-        std::cout << '#'; 
+        std::cout << Colors::CYAN << '#' << Colors::RESET; 
     }
     std::cout << '\n';
-    std::cout <<"Score: "<< score << std::endl;
+    std::cout << Colors::YELLOW << "Score: " << score << Colors::RESET << std::endl;
 }
 
 bool Game::is_gameover(){
@@ -137,6 +187,59 @@ void Game::checkFoodCollision(){
     if(head == food){
         snake.grow();
         score++;
+
+        if(score % 3 == 0){
+            if(move_delay > minimum_move_delay){
+                std::chrono::milliseconds delay_subtract{10};
+                move_delay = move_delay - delay_subtract;
+                if(move_delay < minimum_move_delay){
+                    move_delay = minimum_move_delay;
+                }
+            }
+        }
         spawnFood();
     }
+}
+
+void Game::handleInputs(){
+    char key = input.getInput();
+
+    switch(key){
+        case 'w':{
+            snake.change_direction(Up);
+            break;
+        }
+        case 's':{
+            snake.change_direction(Down);
+            break;
+        }
+        case 'd':{
+            snake.change_direction(Right);
+            break;
+        }
+        case 'a':{
+            snake.change_direction(Left);
+            break;
+        }
+        default:{
+        }
+    }
+}
+
+void Game::resetGame(){
+    score = 0;
+    game_over = false;
+    move_delay = starting_move_delay;
+    snake = Snake();
+    spawnFood();
+}
+
+void Game::printControls(){
+    std::cout << "Controls: W A S D " << std::endl;
+}
+
+void Game::printGameOver(){
+    std::cout << Colors::BRIGHT_RED<<"Game Over!" << Colors::RESET << std::endl;
+    std::cout <<"Press R to" << Colors::ORANGE<<" Restart" << Colors:: RESET <<std::endl;
+    std::cout <<"Press Q to" << Colors::BRIGHT_PURPLE <<" Quit" << Colors::RESET << std::endl;
 }

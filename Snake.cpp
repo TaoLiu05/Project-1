@@ -3,20 +3,11 @@
 Snake::Snake(){
     current_direction = Right;
 
-    Position head;
-    head.x = 10;
-    head.y = 4;
-    body.push_back(head);
-
-    Position body1;
-    body1.x = 9;
-    body1.y = 4;
-    body.push_back(body1);
-
-    Position body2;
-    body2.x = 8;
-    body2.y = 4;
-    body.push_back(body2);
+    body = {
+        {10,4},
+        {9,4},
+        {8,4}
+    };
 }
 
 void Snake::move(){
