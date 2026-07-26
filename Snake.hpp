@@ -3,6 +3,7 @@
 
 #include "position.hpp"
 #include "direction.hpp"
+
 #include<vector>
 
 class Snake {
