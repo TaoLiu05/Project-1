@@ -3,6 +3,7 @@
 Snake::Snake(){
     current_direction = Right;
 
+    //Create the initial head and body of the snake. 
     body = {
         {10,4},
         {9,4},
@@ -14,6 +15,7 @@ void Snake::move(){
     Position current_head = body.at(0);
     Position new_head;
 
+    //Calculate the new head position based on the current direction.
     switch(current_direction){
         case Up:{
             new_head = current_head;
@@ -36,11 +38,14 @@ void Snake::move(){
             break;
         }
     }
+    //Add the new head to the front of the snake.
     body.insert(body.begin(),new_head);
 
+    //Keep the tail if the snake has just eaten food.
     if(pending_growth){
         pending_growth = false;
     }
+    //Otherwise, remove the last body segment.
     else{
         body.pop_back();
     }
@@ -51,6 +56,8 @@ void Snake::grow(){
 }
 
 void Snake::change_direction(Direction new_direction ){
+
+    //The new direction cannot be the oppsite of the current direction.
     switch(current_direction){
 
         case Up:{
